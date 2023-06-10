@@ -8,17 +8,27 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"translator/configs"
 	"unicode/utf8"
 )
+
+type Trsl struct {
+	config *configs.Config
+}
+
+func NewTrsl(config *configs.Config) *Trsl {
+	return &Trsl{config: config}
+
+}
 
 func encodeURI(s string) string {
 	return url.QueryEscape(s)
 }
 
-func getTranslationURL(source, sourceLang, targetLang string) string {
+func (s *Trsl) getTranslationURL(source, sourceLang, targetLang string) string {
 	encodedSource := encodeURI(source)
-	return fmt.Sprintf("https://translate.googleapis.com/translate_a/single?client=gtx&sl=%s&tl=%s&dt=t&q=%s",
-		sourceLang, targetLang, encodedSource)
+	return fmt.Sprintf("%s%s&tl=%s&dt=t&q=%s",
+		s.config.Url, sourceLang, targetLang, encodedSource)
 }
 
 func fetchTranslation(url string) ([]byte, error) {
@@ -46,10 +56,10 @@ func parseTranslationResponse(response []byte) ([]interface{}, error) {
 }
 
 func extractTranslatedText(result []interface{}) string {
+	var cText string
 	defer func() {
 		if r := recover(); r != nil {
-			// Обробка помилки
-			fmt.Println("Помилка:", r)
+			cText = "translation error"
 		}
 	}()
 
@@ -63,12 +73,7 @@ func extractTranslatedText(result []interface{}) string {
 				break
 			}
 		}
-		cText := strings.Join(text, "")
-
-		// Convert the first character to uppercase
-		//if len(cText) > 0 {
-		//	cText = strings.ToUpper(string(cText[0])) + cText[1:]
-		//}
+		cText = strings.Join(text, "")
 
 		return cText
 	} else {
@@ -76,21 +81,20 @@ func extractTranslatedText(result []interface{}) string {
 	}
 }
 
-func Translate(sourceLang, targetLang, source string) string {
-	// Перевірка, чи рядок закодований у форматі UTF-8
+func (s *Trsl) Translate(sourceLang, targetLang, source string) string {
 	if !utf8.ValidString(source) {
 		return "Source string is not encoded in UTF-8"
 	}
 
-	translationURL := getTranslationURL(source, sourceLang, targetLang)
+	translationURL := s.getTranslationURL(source, sourceLang, targetLang)
 	response, err := fetchTranslation(translationURL)
 	if err != nil {
-		return "err fetchTranslation"
+		return "err fetch Translation"
 	}
 
 	result, err := parseTranslationResponse(response)
 	if err != nil {
-		return "err parseTranslationResponse"
+		return "please restart bot"
 	}
 
 	return extractTranslatedText(result)

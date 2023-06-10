@@ -10,10 +10,14 @@ const (
 	Cs = "cs"
 	It = "it"
 
-	Start = "start"
-	Stop  = "stop"
+	Start      = "start"
+	Stop       = "stop"
+	SImput     = "imput"
+	STranslate = "translate"
+	About      = "about"
 
 	RespChoos = "You have selected"
+	RespStop  = "See you next time!"
 
 	SelectImput   = "1) Input language"
 	SelectTransla = "2) Translation language"

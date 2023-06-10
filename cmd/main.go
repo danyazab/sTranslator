@@ -9,13 +9,6 @@ import (
 )
 
 func main() {
-	//translation, err := Translate("Привіт як справи", "uk", "ru")
-	//if err != nil {
-	//	fmt.Println("Translation error:", err)
-	//} else {
-	//	fmt.Println("Translation:", translation)
-	//}
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("unable to load .env file: %e", err)

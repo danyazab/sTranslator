@@ -1,9 +1,9 @@
 package app
 
 import (
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	lang "translator/app/language"
-	tr "translator/app/translate"
 )
 
 func (s *Bot) BoardLang() tgbotapi.ReplyKeyboardMarkup {
@@ -21,14 +21,16 @@ func (s *Bot) BoardLang() tgbotapi.ReplyKeyboardMarkup {
 	return replyKeyboard
 
 }
-func (s *Bot) BoardMenu() tgbotapi.ReplyKeyboardMarkup {
+func (s *Bot) BoardMenu(imput, trsl string) tgbotapi.ReplyKeyboardMarkup {
 
 	replyKeyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton(tr.Translate("en", s.speech, lang.SelectImput)),
-			tgbotapi.NewKeyboardButton(tr.Translate("en", s.speech, lang.SelectTransla)),
+			tgbotapi.NewKeyboardButton(s.tr.Translate("en", s.speech, lang.SelectImput)),
+			tgbotapi.NewKeyboardButton(s.tr.Translate("en", s.speech, lang.SelectTransla)),
 		), tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton(tr.Translate("en", s.speech, lang.AboutBot)),
+			tgbotapi.NewKeyboardButton(fmt.Sprintf("%s    ⇆    %s", imput, trsl)),
+		), tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton(s.tr.Translate("en", s.speech, lang.AboutBot)),
 		),
 	)
 	return replyKeyboard
